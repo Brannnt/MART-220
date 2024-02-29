@@ -26,24 +26,28 @@ var speedY5 = 255;
 var speedX6 = 50;
 var speedY6 = 30;
 
-var img, img2, img3;
+//food images
+var foodObject = [];
+var friesX, friesY;
+var img, img3;
 var img3x = 25;
 var img3y = 275;
-var img3xspeed = 3;
-var img3yspeed = 2;
+var xspeed = 3;
+var yspeed = 2;
 var timerValue = 10;
 
+var xImage = 140, yImage = 150;
+var flipX = false;
 var i = 0;
-var myObject;
 var idleCycle = [];
 var idle1, idle2, idle3, idle4, idle5, idle6, idle7, idle8, idle9, idle10;
-var rectangleObject = [];
 
 let myFont;
 
 function preload() {
   img = loadImage('Images/Gemini-explosion.jpg');
-  img2 = loadImage('Images/Gemini-fries.jpg');
+
+  //foodObject[1] = loadImage('Images/Gemini-Ketchup.jpg');
   img3 = loadImage('Images/Gemini-Ketchup.jpg');
   myFont = loadFont('Fonts/Sixtyfour-Regular.ttf');
 }
@@ -53,22 +57,21 @@ function setup() {
   setInterval(timeIt, 1000);
 
   for (var k = 0; k < 10; k++) {
-    console.log("Images/Idle (" + (k + 1) + ").png");
-    idleCycle[k] = new myCharacter("Images/Idle (" + (k + 1) + ").png", 0, 0, 10, 10);
+    ("Images/Idle (" + (k + 1) + ").png");
+    idleCycle[k] = new myCharacter("Images/Idle (" + (k + 1) + ").png", xImage, yImage, 100, 100);
   }
   for (var i = 0; i < idleCycle.length; i++) {
   }
   setInterval(changeTime, 100);
-  //new cheeze
-  rectangleObject[0] = new myRectangle(
-    random(width), random(height),
-    random(width), random(height),
-    240, 240, 20
-  );
+  //french fries
+  friesX = random(0, width - 100);
+  friesY = random(0, height - 100);
+  foodObject[0] = new myFood('Images/Gemini-fries.jpg', friesX, friesY, 100, 100);
 }
 function draw() {
-  background(250, 50, 50)
+  background(250, 50, 50);
   image(img, 0, 0, width, height);
+ //image(foodObject[0], 0, 0, width, height);
   //meat
   fill(150, 75, 0);
   rect(60, 185, 280, 70);
@@ -82,8 +85,8 @@ function draw() {
   fill(100, 200, 100);
   triangle(speedX3, speedY3, speedX3a, speedY3a, speedX3b, speedY3b);
   //cheeze
-  /*fill(240, 240, 20);
-  triangle(speedX4, speedY4, speedX4a, speedY4a, speedX4b, speedY4b);*/
+  fill(240, 240, 20);
+  triangle(speedX4, speedY4, speedX4a, speedY4a, speedX4b, speedY4b);
   //bottom bun
   fill(200, 120, 70);
   rect(speedX5, speedY5, 300, 80);
@@ -91,23 +94,23 @@ function draw() {
   fill(200, 120, 70);
   rect(speedX6, speedY6, 300, 100);
 
-  image(img2, 275, 275, 100, 100);
+  //image(foodObject[0], friesX, friesY, 100, 100);
+  //image(foodObject[2],25,275,100,100);
   image(img3, img3x, img3y, 100, 100);
-  img3x += img3xspeed;
-  img3y += img3yspeed;
-
+  img3x += xspeed;
+  img3y += yspeed;
 
   if (img3x >= width - 100) {
-    img3xspeed *= -1;
+    xspeed *= -1;
   }
   if (img3x <= 0) {
-    img3xspeed *= -1;
+    xspeed *= -1;
   }
   if (img3y >= height - 100) {
-    img3yspeed *= -1;
+    yspeed *= -1;
   }
   if (img3y <= 0) {
-    img3yspeed *= -1;
+    yspeed *= -1;
   }
 
   fill(0);
@@ -129,20 +132,23 @@ function draw() {
   if (timerValue == 0) {
     text('game over', (width / 2) - 90, height / 2 + 15);
   }
-  //new cheeze
-  if (rectangleObject[0] != null) {
+  if (foodObject[0] != null) {
+    foodObject[0].draw();
+  }
+  keyPressed();
+  if (foodObject[0] != null) {
     if (checkCollision(
       idleCycle[i].x, idleCycle[i].y, idleCycle[i].w, idleCycle[i].h,
-      rectangleObject[0].x1, rectangleObject[0].y1, rectangleObject[0].w2, rectangleObject[0].h2))
+      foodObject[0].x1, foodObject[0].y1, foodObject[0].w2, foodObject[0].h2))
       {
-        rectangleObject[0] = null;
+        foodObject[0] = null;
+      }
+      for (var j = 0; j < foodObject.length; j++) {
+        foodObject[j].draw();
       }
   }
-
   idleCycle[i].draw();
-  if (rectangleObject[0] != null) {
-    rectangleObject[0].draw();
-  }
+
 
 }
 
@@ -164,7 +170,7 @@ function timeIt() {
     timerValue--;
   }
   if (timerValue <= 0) {
-    img3xspeed *= 1.1;
+    xspeed *= 1.1;
   }
 }
 
@@ -173,6 +179,35 @@ function changeTime() {
   i++;
   if (i > idleCycle.length - 1) {
     i = 0;
+  }
+}
+
+function keyPressed() {
+  if (keyIsDown(87)) { // "w" key
+    yImage -= 1;
+  }
+  if (keyIsDown(83)) { // "s" key
+    yImage += 1;
+  }
+  if (keyIsDown(65)) { // "a" key
+    xImage -= 1;
+    flipX = true;
+  }
+  if (keyIsDown(68)) { // "d" key
+    xImage += 1;
+    flipX = false;
+  }
+  console.log("xImage:", xImage);
+  for (var ii = 0; ii < idleCycle.length; ii++) {
+    idleCycle[ii].updateX(xImage);
+    idleCycle[ii].updateFlip(flipX);
+    idleCycle[ii].y = yImage;
+
+    if (foodObject[0] != null) {
+      if (idleCycle[ii].checkCollision(foodObject[0].x, foodObject[0].y, foodObject[0].w, foodObject[0].h)) {
+        foodObject[0] = null;
+      }
+    }
   }
 }
 
@@ -233,5 +268,4 @@ function mouseClicked() {
   speedX6 = 50;
   speedY6 = 30;
 }
-
 
