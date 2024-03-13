@@ -1,6 +1,7 @@
 class myCharacter {
     constructor(myFilename,x,y,w,h){
         //this.myFilename = myFilename;
+        //this.path = path;
         this.characterImage = loadImage(myFilename);
         this.x = x;
         this.y = y;
@@ -14,6 +15,7 @@ class myCharacter {
     updateFlip(flipX) {
         this.flipX = flipX;
     }
+    
     draw()
     {
         if (this.flipX) {
@@ -31,6 +33,7 @@ class myCharacter {
         }
 
     }
+    
     checkCollision(x2, y2, w2, h2) {
 
         if (
@@ -45,4 +48,19 @@ class myCharacter {
             return false;
         }
     }
+    /*
+    getImage()
+    {
+        var myImage = loadImage(this.path);
+        return myImage;
+    }
+    getX()
+    {
+        return this.x;
+    }
+    getY()
+    {
+        return this.y;
+    }
+    */
 }

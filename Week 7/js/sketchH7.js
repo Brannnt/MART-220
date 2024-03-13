@@ -48,11 +48,15 @@ var randomMoveYSpeed = 2;
 var score = 0;
 let myFont;
 
+var idlePaths = [];
+var result;
+
 var beenEaten = false;
 
 function preload() {
-  img = loadImage('Images/Gemini-explosion.jpg');
+  idlePaths = loadStrings('./textfiles/idle.txt');
 
+  img = loadImage('Images/Gemini-explosion.jpg');
   //foodObject[1] = loadImage('Images/Gemini-Ketchup.jpg');
   img3 = loadImage('Images/Gemini-Ketchup.jpg');
   myFont = loadFont('Fonts/Sixtyfour-Regular.ttf');
@@ -62,12 +66,20 @@ function setup() {
   createCanvas(400, 400);
   setInterval(timeIt, 1000);
 
-  for (var k = 0; k < 10; k++) {
+  for (var k = 0; k < idlePaths.length; k++) {
     ("Images/Idle (" + (k + 1) + ").png");
-    idleCycle[k] = new myCharacter("Images/Idle (" + (k + 1) + ").png", xImage, yImage, 100, 100);
+    idleCycle[k] = new myCharacter(idlePaths[k], xImage, yImage, 100, 100);
   }
-  for (var i = 0; i < idleCycle.length; i++) {
-  }
+
+
+/*
+for(var i = 0; i < result.length; i++)
+{
+  idleCycle.push(new myCharacter('textfiles/' + result[i], 0, 0));
+  animation[i] = idleCycle[i].getImage();
+}
+setInterval(incrementIndex, 50);
+*/
   setInterval(changeTime, 100);
   //french fries
   foodObject[0] = new myFood("Images/Gemini-fries.jpg", random(50, width-100), random(50,height-100), 100, 100);
@@ -142,7 +154,7 @@ function draw() {
     text("0:" + timerValue, 10, height - 10);
   }
   if (timerValue < 60) {
-    text('0:0' + timerValue, 10, height - 10);
+    text('0:0' + timerValue, 10, height- 10);
   }
 */
 
@@ -169,6 +181,8 @@ function draw() {
         randomMoveTimer = floor(random(randomMoveDuration / 2, randomMoveDuration));
       }
   }
+  //image(animation[i], idleCycle[i].getX(), idleCycle[i].getY());
+  
   idleCycle[i].draw();
 }
 
@@ -213,7 +227,18 @@ function createANewFoodItem()
 {
     foodObject[0] = new myFood("Images/Gemini-fries.jpg", random(50, width-100), random(50,height-100), 100, 100);
 }
+/*
+function incrementIndex()
+{
+     // increment the index
+     i += 1;
 
+     // if we reach the end of the array, start over
+     if (i >= cowGirlObjects.length) {
+         i = 0;
+     }
+}
+*/
 function keyPressed() {
   if (keyIsDown(87)) { // "w" key
     yImage -= 1;
