@@ -5,10 +5,16 @@ class myFood {
         this.y = y;
         this.w = w;
         this.h = h;
+        this.glitch = new Glitch(); // Initialize Glitch object
     }
 
     draw() {
         image(this.foodImage, this.x, this.y, this.w, this.h);
+        this.glitch.randomBytes(10); // Example: randomize 10 bytes
+        this.glitch.buildImage(); // Build glitched image
+
+        // Display glitched food image
+        image(this.glitch.image, this.x, this.y, this.w, this.h);
     }
     moveRandomly() {
         this.x += random(-randomMoveXSpeed, randomMoveXSpeed);

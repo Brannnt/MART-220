@@ -33,6 +33,7 @@ class myCharacter {
         }
 
     }
+
     getX()
   {
     return this.x;
@@ -50,20 +51,9 @@ class myCharacter {
     return this.h;
   }
 
-    checkCollision(x2, y2, w2, h2) {
-        return collideRectRect(this.x, this.y, this.w, this.h,foodObject[0].getX(), foodObject[0].getY(), foodObject[0].getW(), foodObject[0].getH());
-        /*
-        if (
-            this.x - this.w / 2 < x2 + w2 / 2 &&
-            this.x + w2 / 2 > x2 - this.w / 2 &&
-            this.y - h2 / 2 < y2 + this.h / 2 &&
-            this.y + h2 / 2 > y2 - this.h / 2
-    
-        ) {
-            return true;
-        } else {
-            return false;
-        }*/
-    }
+  checkCollision(x2, y2, w2, h2) {
+    return collideRectRect(this.x, this.y, this.w, this.h, x2, y2, w2, h2);
+}
+
 
 }

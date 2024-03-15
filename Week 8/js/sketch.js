@@ -38,6 +38,7 @@ var timerValue = 60;
 var xImage = 10, yImage = 10;
 var flipX = false;
 var i = 0;
+var f = 0;
 var idleCycle = [];
 var idle1, idle2, idle3, idle4, idle5, idle6, idle7, idle8, idle9, idle10;
 
@@ -46,22 +47,27 @@ var randomMoveDuration = 60; // Adjust the duration as needed
 var randomMoveXSpeed = 2;
 var randomMoveYSpeed = 2;
 var score = 0;
+var health =3;
 let myFont;
 
 var idlePaths = [];
 var result;
 var beenEaten = false;
+var beenEaten1 = false;
 
-var backgroundSound
+var backgroundSound;
+var goodeatingSound;
+var badeatingSound;
+
+let glitch;
 
 function preload() {
   idlePaths = loadStrings('./textfiles/idle.txt');
-
   img = loadImage('Images/Gemini-explosion.jpg');
-  img3 = loadImage('Images/Gemini-Ketchup.jpg');
   myFont = loadFont('Fonts/Sixtyfour-Regular.ttf');
-
   backgroundSound = loadSound('./Sound/684614__seth_makes_sounds__fun-happy-song.wav');
+  goodeatingSound = loadSound('./Sound/thedust82_eating-a-cracker.mp3')
+  badeatingSound = loadSound('./Sound/syazamirin_dying-and-asking-for-help.wav')
 }
 
 function setup() {
@@ -75,6 +81,14 @@ function setup() {
   setInterval(changeTime, 100);
   //french fries
   foodObject[0] = new myFood("Images/Gemini-fries.jpg", random(50, width - 100), random(50, height - 100), 100, 100);
+  foodObject[1] = new myFood("Images/Gemini-Ketchup.jpg", img3x, img3y, 100, 100);
+
+  glitch = new Glitch();
+  glitch.loadType('jpg'); // specify jpeg file glitching, default
+  glitch.loadQuality(.25); // optionally crunch to low quality
+	loadImage('Images/Gemini-Ketchup.jpg', function(im){
+		glitch.loadImage(im);
+	});
 }
 function draw() {
   background(250, 50, 50);
@@ -101,24 +115,17 @@ function draw() {
   //top bun
   fill(200, 120, 70);
   rect(speedX6, speedY6, 300, 100);
-
-  image(img3, img3x, img3y, 100, 100);
-  img3x += xspeed;
-  img3y += yspeed;
-
-  if (img3x >= width - 100) {
+  if (foodObject[1] !=null){
+  foodObject[1].x += xspeed; // Update x position
+  foodObject[1].y += yspeed; // Update y position
+  
+  // Check boundaries for foodObject[1] and change direction if needed
+  if (foodObject[1].x >= width - 100 || foodObject[1].x <= 0) {
     xspeed *= -1;
   }
-  if (img3x <= 0) {
-    xspeed *= -1;
+  if (foodObject[1].y >= height - 100 || foodObject[1].y <= 0) {
+    yspeed *= -1;}
   }
-  if (img3y >= height - 100) {
-    yspeed *= -1;
-  }
-  if (img3y <= 0) {
-    yspeed *= -1;
-  }
-
   fill(0);
   textFont(myFont);
   textSize(10);
@@ -137,37 +144,59 @@ function draw() {
   }
   fill(0);
   textSize(14);
-  textFont(myFont);
   text("Score: " + score, 10, height - 30);
+  text("Health: "+ health, 10, height - 50);
 
   keyPressed();
   if (foodObject[0] != null) {
     foodObject[0].draw();
     foodObject[0].moveRandomly();
-
-    for (var j = 0; j < foodObject.length; j++) {
-      foodObject[j].draw();
-    }
     randomMoveTimer--;
     if (randomMoveTimer <= 0) {
       randomMoveTimer = floor(random(randomMoveDuration / 2, randomMoveDuration));
     }
   }
-
+  /*
+   // Apply glitch effect to foodObject[1] image
+   glitch.randomBytes(10); // Example: randomize 10 bytes
+   glitch.buildImage(); // Build glitched image
+ 
+   // Display glitched image
+   image(glitch.image, foodObject[1].x, foodObject[1].y, foodObject[1].w, foodObject[1].h);
+ */
   idleCycle[i].draw();
+  glitchify();
+
+}
+function glitchify(){
+  glitch.resetBytes();
+	glitch.replaceBytes(150, 100); // swap all decimal byte 100 for 104
+	glitch.randomBytes(1); // add one random byte for movement
+  glitch.buildImage();
+  if (foodObject[1] !=null){
+  image(glitch.image, foodObject[1].x, foodObject[1].y, foodObject[1].w, foodObject[1].h);
+}
 }
 
 function timeIt() {
   if (timerValue > 0) {
     timerValue--;
   }
-  if (timerValue <= 30) {
+  if (timerValue <= 55) {
     xspeed *= 1.001;
+
   }
 
   if (beenEaten && timerValue % 3 == 0) {
     createANewFoodItem();
     beenEaten = false;
+  }
+  if (beenEaten1 && timerValue % 3 == 0) {
+    createANewFoodItem1();
+    beenEaten1 = false;
+  }
+  if (health <= 0){
+    timerValue = 0
   }
 }
 
@@ -181,38 +210,45 @@ function changeTime() {
 function createANewFoodItem() {
   foodObject[0] = new myFood("Images/Gemini-fries.jpg", random(50, width - 100), random(50, height - 100), 100, 100);
 }
-
+function createANewFoodItem1() {
+  foodObject[1] = new myFood("Images/Gemini-Ketchup.jpg", img3x, img3y, 100, 100);
+}
 function keyPressed() {
   if (keyIsDown(87)) { // "w" key
-    yImage -= 1;
+    yImage -= 2;
   }
   if (keyIsDown(83)) { // "s" key
-    yImage += 1;
+    yImage += 2;
   }
   if (keyIsDown(65)) { // "a" key
-    xImage -= 1;
+    xImage -= 2;
     flipX = true;
   }
   if (keyIsDown(68)) { // "d" key
-    xImage += 1;
+    xImage += 2;
     flipX = false;
   }
-  ("xImage:", xImage);
+  
+  // Update idle character position
   for (var ii = 0; ii < idleCycle.length; ii++) {
     idleCycle[ii].updateX(xImage);
     idleCycle[ii].updateFlip(flipX);
     idleCycle[ii].y = yImage;
 
-    if (foodObject[0] != null) {
-      if (idleCycle[ii].checkCollision(foodObject[0].x, foodObject[0].y, foodObject[0].w, foodObject[0].h)) {
-        beenEaten = true;
-        foodObject[0] = null;
-        score++;
-      }
+    if (foodObject[1] != null && idleCycle[ii].checkCollision(foodObject[1].x, foodObject[1].y, foodObject[1].w, foodObject[1].h)) {
+      beenEaten1 = true;
+      foodObject[1] = null; 
+      health--;
+      badeatingSound.play(); 
     }
+    if (foodObject[0] != null && idleCycle[ii].checkCollision(foodObject[0].x, foodObject[0].y, foodObject[0].w, foodObject[0].h)) {
+      beenEaten = true;
+      foodObject[0] = null;
+      score++;
+      goodeatingSound.play();
   }
 }
-
+}
 function mouseMoved() {
   //onion
   speedX1 += -5
@@ -241,7 +277,6 @@ function mouseMoved() {
   speedX6 += 1
   speedY6 += -3
 }
-
 function mouseClicked() {
   //onion
   speedX1 = 70;
